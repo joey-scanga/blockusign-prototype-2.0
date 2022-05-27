@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sign Up</title>
+  </head>
+  <body>
+    <h1>Sign Up</h1>
+    <form action='/user/signup' method='POST'>
+      <div>
+        <label>Username: </label><br>
+        <input type='text' id='username' name='username'><br>
+      </div>
+      <div>
+        <label>Password: </label><br>
+        <input type='password' id='password' name='password'><br>
+      </div>
+      <div>
+        <label>Confirm Password: </label><br>
+        <input type='password' id='confirmpassword' name='confirmpassword'><br>
+      </div><br>
+      <input type='submit' value='Log In'><br>
+    </form>
+    <%= locals.text %>
+  </body>
+</html>

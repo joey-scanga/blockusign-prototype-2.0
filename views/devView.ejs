@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login</title>
+  </head>
+  <body>
+    <h1>Database Actions</h1>
+
+    <!--List database keys-->
+    <div>
+      <a href="https://TenseCarelessProgrammers.joey90234.repl.co/devView/listDatabaseKeys">List Database</a>
+    </div>
+
+    <!--Get values of specific key-->
+    <div>
+      <form action='/devView/listKeyValues' method='GET'>
+        <div>
+          <input type='text' id='key' name='key'>
+          <input type='submit' value='Get Values Of Key'>
+        </div>
+      </form>
+      <%= locals.keyValues %>
+    </div>
+
+    <!--Add more below: -->
+
+    <!-- Return to homepage -->
+    <div>
+      <a href="https://TenseCarelessProgrammers.joey90234.repl.co">Back to home</a>
+    </div>
+    
+  </body>
+</html>
