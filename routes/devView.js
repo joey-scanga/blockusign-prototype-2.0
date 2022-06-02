@@ -31,5 +31,18 @@ router.get('/listKeyValues', async (req, res) => {
   } 
 })
 
+router.get('/getKeyObject', async (req, res) => {
+  let list = await db.list()
+  console.log(list)
+})
+
+router.get('/clearDatabase', async(req, res) => {
+  const list = await db.list()
+  list.forEach((key) => {
+    db.delete(key)
+  })
+  console.log("Database cleared!")
+})
+
 
 module.exports = router
