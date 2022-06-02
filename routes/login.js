@@ -9,6 +9,24 @@ const db = new Database()
 const jsonParser = bodyParser.json()
 const urlParser = bodyParser.urlencoded({extended: true})
 
+async function validatePasswordParams(req, res, next) {
+  const password = req.body.password
+
+  const regex = /[ !@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?]/g
+
+  if (password.length < 8){
+    res.render('signup', {text: "Password must be at least 8 characters long, with only letters A-Za-z, numbers 0-9, and hyphens. "})
+  }
+
+  else if (regex.test(password)){
+    res.render('signup', {text: "Password must be at least 8 characters long, with only letters A-Za-z, numbers 0-9, and hyphens. "})
+  }
+
+  else{
+    next()
+  }
+}
+
 async function signUp(req, res) {
   const rounds = 10
   const salt = await bcrypt.genSalt(rounds)
@@ -68,7 +86,7 @@ router.get('/login', (req, res) => {
   res.render('login', { text: ""})
 })
 
-router.post('/signup', urlParser, signUp)
+router.post('/signup', urlParser, validatePasswordParams, signUp)
 
 router.post('/login', urlParser, login)
 
