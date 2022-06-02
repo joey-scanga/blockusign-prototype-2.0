@@ -31,7 +31,7 @@ async function hashAndStoreNewUser(req, res) {
   const password = req.body.password
   const confirmPassword = req.body.confirmpassword
 
-  if(username === null || password === null || confirmPassword === null){
+  if(username === "" || password === "" || confirmPassword === ""){
     res.status(400).render('signup', {text: "Fill out all fields."})
   }
   else if(password !== confirmPassword){
@@ -53,35 +53,36 @@ async function authenticateUser(req, res) {
   const username = req.body.username
   const password = req.body.password
 
-  if(username === null || password === null){
+  if(username === "" || password === ""){
     res.status(400).render('login', {text: "Login failed"})
   }
-  
-  const dbResponse = await db.get(username)
-
-  if(dbResponse === null){
-    res.status(400).render('login', {text: "Login failed"})
-  }
-
   else{
-    value = JSON.parse(dbResponse)
-    console.log(value)
+    const dbResponse = await db.get(username)
   
-    const passHash = value.passHash
-      
-    if(passHash){
-      const isValid = await bcrypt.compare(password, passHash)
-      if(isValid){
-        console.log("Logged in successfully!")
-        res.render('login', {text: 'logged in successfully!'})
-      }
-      else{
-        res.render('login', {text: "incorrect username/password"})
-      }
+    if(dbResponse === null){
+      res.status(400).render('login', {text: "Login failed"})
     }
   
     else{
-      res.render('login', {text: "No user found"})
+      value = JSON.parse(dbResponse)
+      console.log(value)
+    
+      const passHash = value.passHash
+        
+      if(passHash){
+        const isValid = await bcrypt.compare(password, passHash)
+        if(isValid){
+          console.log("Logged in successfully!")
+          res.render('login', {text: 'logged in successfully!'})
+        }
+        else{
+          res.render('login', {text: "incorrect username/password"})
+        }
+      }
+    
+      else{
+        res.render('login', {text: "No user found"})
+      }
     }
   }
 }
