@@ -37,9 +37,12 @@ async function hashAndStoreNewUser(req, res) {
   
   const username = req.body.username
   const password = req.body.password
-  
   const confirmPassword = req.body.confirmpassword
-  if(password !== confirmPassword){
+
+  if(!username || !password || !confirmPassword){
+    res.status(400).render('signup', {text: "Fill out all fields."})
+  }
+  else if(password !== confirmPassword){
     res.status(400).render('signup', {text: "Passwords don't match "})
   }
   const alreadyUsed = await db.get(username)
