@@ -5,18 +5,11 @@ const Database = require('@replit/database')
 const bcrypt = require('bcrypt')
 const db = new Database()
 
+//--------------------------Middleware Functions--------------------------------------
 const jsonParser = bodyParser.json()
 const urlParser = bodyParser.urlencoded({extended: true})
 
-router.get('/signup', (req, res) => {
-  res.render('signup', {text: ""})
-})
-
-router.get('/login', (req, res) => {
-  res.render('login', { text: ""})
-})
-
-router.post('/signup', urlParser, async (req, res) => {
+async function signUp(req, res) {
   const rounds = 10
   const salt = await bcrypt.genSalt(rounds)
   
@@ -37,9 +30,9 @@ router.post('/signup', urlParser, async (req, res) => {
                      passHash: passHash}))
     res.status(200).render('home')
   }
-})
+}
 
-router.post('/login', urlParser, async (req, res) => {
+async function login(req, res) {
   const username = req.body.username
   const password = req.body.password
   
@@ -64,6 +57,19 @@ router.post('/login', urlParser, async (req, res) => {
   else{
     res.render('login', {text: "No user found"})
   }
+}
+
+//----------------------Routes--------------------------------------------------------
+router.get('/signup', (req, res) => {
+  res.render('signup', {text: ""})
 })
+
+router.get('/login', (req, res) => {
+  res.render('login', { text: ""})
+})
+
+router.post('/signup', urlParser, signUp)
+
+router.post('/login', urlParser, login)
 
 module.exports = router
