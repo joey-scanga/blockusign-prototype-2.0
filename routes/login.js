@@ -14,18 +14,10 @@ function validatePasswordParams(req, res, next) {
 
   const regex = /[ !@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?]/g
 
-  if (password.length < 8){
+  if (password.length < 8 || password.length > 100 || regex.test(password)){
     res.render('signup', {text: "Password must be at least 8 characters long, with only letters A-Za-z, numbers 0-9, and hyphens. "})
   }
-
-  else if (password.length > 100){
-    res.render('signup', {text: "Password is too long!"})
-  }
-
-  else if (regex.test(password)){
-    res.render('signup', {text: "Password must be at least 8 characters long, with only letters A-Za-z, numbers 0-9, and hyphens. "})
-  }
-
+    
   else{
     next()
   }
@@ -47,7 +39,7 @@ async function hashAndStoreNewUser(req, res) {
   }
   const alreadyUsed = await db.get(username)
   if(alreadyUsed){
-    res.render('signup', {text: "User already made" })
+    res.render('signup', {text: "User already exists" })
   }
   else{
     const passHash = await bcrypt.hash(password, salt)
