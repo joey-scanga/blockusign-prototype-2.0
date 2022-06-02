@@ -39,7 +39,7 @@ async function hashAndStoreNewUser(req, res) {
   const password = req.body.password
   const confirmPassword = req.body.confirmpassword
 
-  if(!username || !password || !confirmPassword){
+  if(username === null || password === null || confirmPassword === null){
     res.status(400).render('signup', {text: "Fill out all fields."})
   }
   else if(password !== confirmPassword){
@@ -60,27 +60,37 @@ async function hashAndStoreNewUser(req, res) {
 async function authenticateUser(req, res) {
   const username = req.body.username
   const password = req.body.password
+
+  if(username === null || password === null){
+    res.status(400).render('login', {text: "Login failed"})
+  }
   
   const dbResponse = await db.get(username)
-  
-  value = JSON.parse(dbResponse)
-  console.log(value)
 
-  const passHash = value.passHash
-    
-  if(passHash){
-    const isValid = await bcrypt.compare(password, passHash)
-    if(isValid){
-      console.log("Logged in successfully!")
-      res.render('login', {text: 'logged in successfully!'})
-    }
-    else{
-      res.render('login', {text: "incorrect username/password"})
-    }
+  if(dbResponse === null){
+    res.status(400).render('login', {text: "Login failed"})
   }
 
   else{
-    res.render('login', {text: "No user found"})
+    value = JSON.parse(dbResponse)
+    console.log(value)
+  
+    const passHash = value.passHash
+      
+    if(passHash){
+      const isValid = await bcrypt.compare(password, passHash)
+      if(isValid){
+        console.log("Logged in successfully!")
+        res.render('login', {text: 'logged in successfully!'})
+      }
+      else{
+        res.render('login', {text: "incorrect username/password"})
+      }
+    }
+  
+    else{
+      res.render('login', {text: "No user found"})
+    }
   }
 }
 
