@@ -18,6 +18,10 @@ function validatePasswordParams(req, res, next) {
     res.render('signup', {text: "Password must be at least 8 characters long, with only letters A-Za-z, numbers 0-9, and hyphens. "})
   }
 
+  else if (password.length > 100){
+    res.render('signup', {text: "Password is too long!"})
+  }
+
   else if (regex.test(password)){
     res.render('signup', {text: "Password must be at least 8 characters long, with only letters A-Za-z, numbers 0-9, and hyphens. "})
   }
