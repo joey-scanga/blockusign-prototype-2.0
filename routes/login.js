@@ -27,7 +27,7 @@ async function validatePasswordParams(req, res, next) {
   }
 }
 
-async function signUp(req, res) {
+async function hashAndStoreNewUser(req, res) {
   const rounds = 10
   const salt = await bcrypt.genSalt(rounds)
   
@@ -50,7 +50,7 @@ async function signUp(req, res) {
   }
 }
 
-async function login(req, res) {
+async function authenticateUser(req, res) {
   const username = req.body.username
   const password = req.body.password
   
@@ -86,8 +86,8 @@ router.get('/login', (req, res) => {
   res.render('login', { text: ""})
 })
 
-router.post('/signup', urlParser, validatePasswordParams, signUp)
+router.post('/signup', urlParser, validatePasswordParams, hashAndStoreNewUser)
 
-router.post('/login', urlParser, login)
+router.post('/login', urlParser, authenticateUser)
 
 module.exports = router
