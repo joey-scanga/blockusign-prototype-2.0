@@ -9,7 +9,7 @@ const db = new Database()
 const jsonParser = bodyParser.json()
 const urlParser = bodyParser.urlencoded({extended: true})
 
-async function validatePasswordParams(req, res, next) {
+function validatePasswordParams(req, res, next) {
   const password = req.body.password
 
   const regex = /[ !@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?]/g
