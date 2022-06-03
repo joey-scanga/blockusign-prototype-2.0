@@ -1,8 +1,10 @@
+require('dotenv').config()
 const express = require('express')
 const router = express.Router()
 const bodyParser = require('body-parser')
 const Database = require('@replit/database')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const db = new Database()
 
 //--------------------------Middleware Functions--------------------------------------
@@ -49,42 +51,46 @@ async function hashAndStoreNewUser(req, res) {
   }
 }
 
-async function authenticateUser(req, res) {
+async function authenticateUser(req, res, next) {
   const username = req.body.username
   const password = req.body.password
 
   if(username === "" || password === ""){
-    res.status(400).render('login', {text: "Login failed"})
+    return res.status(400).render('login', {text: "Login failed"})
   }
-  else{
-    const dbResponse = await db.get(username)
   
-    if(dbResponse === null){
-      res.status(400).render('login', {text: "Login failed"})
+  const dbResponse = await db.get(username)
+
+  if(dbResponse === null){
+    return res.status(400).render('login', {text: "Login failed"})
+  }
+
+  value = JSON.parse(dbResponse)
+  console.log(value)
+
+  const passHash = value.passHash
+    
+  if(passHash){
+    const isValid = await bcrypt.compare(password, passHash)
+    if(isValid){
+      console.log(username, "logged in")
+      return next()
     }
-  
     else{
-      value = JSON.parse(dbResponse)
-      console.log(value)
-    
-      const passHash = value.passHash
-        
-      if(passHash){
-        const isValid = await bcrypt.compare(password, passHash)
-        if(isValid){
-          console.log("Logged in successfully!")
-          res.render('login', {text: 'logged in successfully!'})
-        }
-        else{
-          res.render('login', {text: "incorrect username/password"})
-        }
-      }
-    
-      else{
-        res.render('login', {text: "No user found"})
-      }
+      return res.render('login', {text: "Login failed"})
     }
   }
+
+  return res.render('login', {text: "Login failed"})
+  
+}
+
+async function serializeUser(req, res) {
+  const username = req.body.username
+  const user = { name: username }
+  
+  const accessToken = jwt.sign(user, process.env['ACCESS_TOKEN_SECRET'])
+  res.json({ accessToken: accessToken })
 }
 
 //----------------------Routes--------------------------------------------------------
@@ -98,6 +104,6 @@ router.get('/login', (req, res) => {
 
 router.post('/signup', urlParser, validatePasswordParams, hashAndStoreNewUser)
 
-router.post('/login', urlParser, authenticateUser)
+router.post('/login', urlParser, jsonParser, authenticateUser, serializeUser)
 
 module.exports = router

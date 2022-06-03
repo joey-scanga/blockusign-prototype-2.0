@@ -1,5 +1,4 @@
 const express = require('express');
-const mysql = require('mysql')
 const Database = require('@replit/database')
 
 const app = express();
